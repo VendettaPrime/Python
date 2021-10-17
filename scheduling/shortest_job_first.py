@@ -13,7 +13,7 @@ def calculate_waitingtime(
 ) -> list[int]:
     """
     Calculate the waiting time of each processes
-    Return: list of waiting times.
+    Return: List of waiting times.
     >>> calculate_waitingtime([1,2,3,4],[3,3,5,1],4)
     [0, 3, 5, 0]
     >>> calculate_waitingtime([1,2,3],[2,5,1],3)
@@ -92,7 +92,7 @@ def calculate_turnaroundtime(
 
 def calculate_average_times(
     waiting_time: list[int], turn_around_time: list[int], no_of_processes: int
-):
+) -> None:
     """
     This function calculates the average of the waiting & turnaround times
     Prints: Average Waiting time & Average Turn Around Time

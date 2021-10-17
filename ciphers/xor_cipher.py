@@ -16,10 +16,11 @@
         - encrypt_file : boolean
         - decrypt_file : boolean
 """
+from __future__ import annotations
 
 
 class XORCipher:
-    def __init__(self, key=0):
+    def __init__(self, key: int = 0):
         """
         simple constructor that receives a key or uses
         default key = 0
@@ -28,7 +29,7 @@ class XORCipher:
         # private field
         self.__key = key
 
-    def encrypt(self, content, key):
+    def encrypt(self, content: str, key: int) -> list[str]:
         """
         input: 'content' of type string and 'key' of type int
         output: encrypted string 'content' as a list of chars
@@ -41,19 +42,12 @@ class XORCipher:
 
         key = key or self.__key or 1
 
-        # make sure key can be any size
-        while key > 255:
-            key -= 255
+        # make sure key is an appropriate size
+        key %= 255
 
-        # This will be returned
-        ans = []
+        return [chr(ord(ch) ^ key) for ch in content]
 
-        for ch in content:
-            ans.append(chr(ord(ch) ^ key))
-
-        return ans
-
-    def decrypt(self, content, key):
+    def decrypt(self, content: str, key: int) -> list[str]:
         """
         input: 'content' of type list and 'key' of type int
         output: decrypted string 'content' as a list of chars
@@ -66,19 +60,12 @@ class XORCipher:
 
         key = key or self.__key or 1
 
-        # make sure key can be any size
-        while key > 255:
-            key -= 255
+        # make sure key is an appropriate size
+        key %= 255
 
-        # This will be returned
-        ans = []
+        return [chr(ord(ch) ^ key) for ch in content]
 
-        for ch in content:
-            ans.append(chr(ord(ch) ^ key))
-
-        return ans
-
-    def encrypt_string(self, content, key=0):
+    def encrypt_string(self, content: str, key: int = 0) -> str:
         """
         input: 'content' of type string and 'key' of type int
         output: encrypted string 'content'
@@ -103,7 +90,7 @@ class XORCipher:
 
         return ans
 
-    def decrypt_string(self, content, key=0):
+    def decrypt_string(self, content: str, key: int = 0) -> str:
         """
         input: 'content' of type string and 'key' of type int
         output: decrypted string 'content'
@@ -128,7 +115,7 @@ class XORCipher:
 
         return ans
 
-    def encrypt_file(self, file, key=0):
+    def encrypt_file(self, file: str, key: int = 0) -> bool:
         """
         input: filename (str) and a key (int)
         output: returns true if encrypt process was
@@ -141,19 +128,19 @@ class XORCipher:
         assert isinstance(file, str) and isinstance(key, int)
 
         try:
-            with open(file, "r") as fin:
+            with open(file) as fin:
                 with open("encrypt.out", "w+") as fout:
 
                     # actual encrypt-process
                     for line in fin:
                         fout.write(self.encrypt_string(line, key))
 
-        except IOError:
+        except OSError:
             return False
 
         return True
 
-    def decrypt_file(self, file, key):
+    def decrypt_file(self, file: str, key: int) -> bool:
         """
         input: filename (str) and a key (int)
         output: returns true if decrypt process was
@@ -166,14 +153,14 @@ class XORCipher:
         assert isinstance(file, str) and isinstance(key, int)
 
         try:
-            with open(file, "r") as fin:
+            with open(file) as fin:
                 with open("decrypt.out", "w+") as fout:
 
                     # actual encrypt-process
                     for line in fin:
                         fout.write(self.decrypt_string(line, key))
 
-        except IOError:
+        except OSError:
             return False
 
         return True
@@ -183,7 +170,7 @@ class XORCipher:
 # crypt = XORCipher()
 # key = 67
 
-# # test enrcypt
+# # test encrypt
 # print(crypt.encrypt("hallo welt",key))
 # # test decrypt
 # print(crypt.decrypt(crypt.encrypt("hallo welt",key), key))

@@ -18,10 +18,11 @@ Overview:
 - function squareZeroMatrix(N)
 - function randomMatrix(W,H,a,b)
 """
-
+from __future__ import annotations
 
 import math
 import random
+from typing import Collection, overload
 
 
 class Vector:
@@ -45,7 +46,7 @@ class Vector:
     TODO: compare-operator
     """
 
-    def __init__(self, components=None):
+    def __init__(self, components: Collection[float] | None = None) -> None:
         """
         input: components or nothing
         simple constructor for init the vector
@@ -54,7 +55,7 @@ class Vector:
             components = []
         self.__components = list(components)
 
-    def set(self, components):
+    def set(self, components: Collection[float]) -> None:
         """
         input: new components
         changes the components of the vector.
@@ -65,13 +66,13 @@ class Vector:
         else:
             raise Exception("please give any vector")
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         returns a string representation of the vector
         """
         return "(" + ",".join(map(str, self.__components)) + ")"
 
-    def component(self, i):
+    def component(self, i: int) -> float:
         """
         input: index (start at 0)
         output: the i-th component of the vector.
@@ -81,22 +82,22 @@ class Vector:
         else:
             raise Exception("index out of range")
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         returns the size of the vector
         """
         return len(self.__components)
 
-    def euclidLength(self):
+    def euclidLength(self) -> float:
         """
         returns the euclidean length of the vector
         """
-        summe = 0
+        summe: float = 0
         for c in self.__components:
             summe += c ** 2
         return math.sqrt(summe)
 
-    def __add__(self, other):
+    def __add__(self, other: Vector) -> Vector:
         """
         input: other vector
         assumes: other vector has the same size
@@ -109,7 +110,7 @@ class Vector:
         else:
             raise Exception("must have the same size")
 
-    def __sub__(self, other):
+    def __sub__(self, other: Vector) -> Vector:
         """
         input: other vector
         assumes: other vector has the same size
@@ -122,7 +123,15 @@ class Vector:
         else:  # error case
             raise Exception("must have the same size")
 
-    def __mul__(self, other):
+    @overload
+    def __mul__(self, other: float) -> Vector:
+        ...
+
+    @overload
+    def __mul__(self, other: Vector) -> float:
+        ...
+
+    def __mul__(self, other: float | Vector) -> float | Vector:
         """
         mul implements the scalar multiplication
         and the dot-product
@@ -132,20 +141,50 @@ class Vector:
             return Vector(ans)
         elif isinstance(other, Vector) and (len(self) == len(other)):
             size = len(self)
-            summe = 0
+            summe: float = 0
             for i in range(size):
                 summe += self.__components[i] * other.component(i)
             return summe
         else:  # error case
             raise Exception("invalid operand!")
 
-    def copy(self):
+    def magnitude(self) -> float:
+        """
+        Magnitude of a Vector
+
+        >>> Vector([2, 3, 4]).magnitude()
+        5.385164807134504
+
+        """
+        return sum([i ** 2 for i in self.__components]) ** (1 / 2)
+
+    def angle(self, other: Vector, deg: bool = False) -> float:
+        """
+        find angle between two Vector (self, Vector)
+
+        >>> Vector([3, 4, -1]).angle(Vector([2, -1, 1]))
+        1.4906464636572374
+        >>> Vector([3, 4, -1]).angle(Vector([2, -1, 1]), deg = True)
+        85.40775111366095
+        >>> Vector([3, 4, -1]).angle(Vector([2, -1]))
+        Traceback (most recent call last):
+        ...
+        Exception: invalid operand!
+        """
+        num = self * other
+        den = self.magnitude() * other.magnitude()
+        if deg:
+            return math.degrees(math.acos(num / den))
+        else:
+            return math.acos(num / den)
+
+    def copy(self) -> Vector:
         """
         copies this vector and returns it.
         """
         return Vector(self.__components)
 
-    def changeComponent(self, pos, value):
+    def changeComponent(self, pos: int, value: float) -> None:
         """
         input: an index (pos) and a value
         changes the specified component (pos) with the
@@ -156,7 +195,7 @@ class Vector:
         self.__components[pos] = value
 
 
-def zeroVector(dimension):
+def zeroVector(dimension: int) -> Vector:
     """
     returns a zero-vector of size 'dimension'
     """
@@ -165,7 +204,7 @@ def zeroVector(dimension):
     return Vector([0] * dimension)
 
 
-def unitBasisVector(dimension, pos):
+def unitBasisVector(dimension: int, pos: int) -> Vector:
     """
     returns a unit basis vector with a One
     at index 'pos' (indexing at 0)
@@ -177,7 +216,7 @@ def unitBasisVector(dimension, pos):
     return Vector(ans)
 
 
-def axpy(scalar, x, y):
+def axpy(scalar: float, x: Vector, y: Vector) -> Vector:
     """
     input: a 'scalar' and two vectors 'x' and 'y'
     output: a vector
@@ -192,7 +231,7 @@ def axpy(scalar, x, y):
     return x * scalar + y
 
 
-def randomVector(N, a, b):
+def randomVector(N: int, a: int, b: int) -> Vector:
     """
     input: size (N) of the vector.
            random range (a,b)
@@ -200,7 +239,7 @@ def randomVector(N, a, b):
             random integer components between 'a' and 'b'.
     """
     random.seed(None)
-    ans = [random.randint(a, b) for i in range(N)]
+    ans = [random.randint(a, b) for _ in range(N)]
     return Vector(ans)
 
 
@@ -222,7 +261,7 @@ class Matrix:
            operator - _ implements the matrix-subtraction
     """
 
-    def __init__(self, matrix, w, h):
+    def __init__(self, matrix: list[list[float]], w: int, h: int) -> None:
         """
         simple constructor for initializing
         the matrix with components.
@@ -231,7 +270,7 @@ class Matrix:
         self.__width = w
         self.__height = h
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         returns a string representation of this
         matrix.
@@ -246,7 +285,7 @@ class Matrix:
                     ans += str(self.__matrix[i][j]) + "|\n"
         return ans
 
-    def changeComponent(self, x, y, value):
+    def changeComponent(self, x: int, y: int, value: float) -> None:
         """
         changes the x-y component of this matrix
         """
@@ -255,7 +294,7 @@ class Matrix:
         else:
             raise Exception("changeComponent: indices out of bounds")
 
-    def component(self, x, y):
+    def component(self, x: int, y: int) -> float:
         """
         returns the specified (x,y) component
         """
@@ -264,13 +303,13 @@ class Matrix:
         else:
             raise Exception("changeComponent: indices out of bounds")
 
-    def width(self):
+    def width(self) -> int:
         """
         getter for the width
         """
         return self.__width
 
-    def height(self):
+    def height(self) -> int:
         """
         getter for the height
         """
@@ -303,7 +342,15 @@ class Matrix:
         else:
             raise Exception("matrix is not square")
 
-    def __mul__(self, other):
+    @overload
+    def __mul__(self, other: float) -> Matrix:
+        ...
+
+    @overload
+    def __mul__(self, other: Vector) -> Vector:
+        ...
+
+    def __mul__(self, other: float | Vector) -> Vector | Matrix:
         """
         implements the matrix-vector multiplication.
         implements the matrix-scalar multiplication
@@ -312,7 +359,7 @@ class Matrix:
             if len(other) == self.__width:
                 ans = zeroVector(self.__height)
                 for i in range(self.__height):
-                    summe = 0
+                    summe: float = 0
                     for j in range(self.__width):
                         summe += other.component(j) * self.__matrix[i][j]
                     ans.changeComponent(i, summe)
@@ -330,7 +377,7 @@ class Matrix:
             ]
             return Matrix(matrix, self.__width, self.__height)
 
-    def __add__(self, other):
+    def __add__(self, other: Matrix) -> Matrix:
         """
         implements the matrix-addition.
         """
@@ -345,7 +392,7 @@ class Matrix:
         else:
             raise Exception("matrix must have the same dimension!")
 
-    def __sub__(self, other):
+    def __sub__(self, other: Matrix) -> Matrix:
         """
         implements the matrix-subtraction.
         """
@@ -361,19 +408,21 @@ class Matrix:
             raise Exception("matrix must have the same dimension!")
 
 
-def squareZeroMatrix(N):
+def squareZeroMatrix(N: int) -> Matrix:
     """
     returns a square zero-matrix of dimension NxN
     """
-    ans = [[0] * N for i in range(N)]
+    ans: list[list[float]] = [[0] * N for _ in range(N)]
     return Matrix(ans, N, N)
 
 
-def randomMatrix(W, H, a, b):
+def randomMatrix(W: int, H: int, a: int, b: int) -> Matrix:
     """
     returns a random matrix WxH with integer components
     between 'a' and 'b'
     """
     random.seed(None)
-    matrix = [[random.randint(a, b) for j in range(W)] for i in range(H)]
+    matrix: list[list[float]] = [
+        [random.randint(a, b) for _ in range(W)] for _ in range(H)
+    ]
     return Matrix(matrix, W, H)

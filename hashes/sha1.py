@@ -8,7 +8,7 @@ Usage: python sha1.py --string "Hello World!!"
 Also contains a Test class to verify that the generated Hash is same as that
 returned by the hashlib library
 
-SHA1 hash or SHA1 sum of a string is a crytpographic function which means it is easy
+SHA1 hash or SHA1 sum of a string is a cryptographic function which means it is easy
 to calculate forwards but extremely difficult to calculate backwards. What this means
 is, you can easily calculate the hash of  a string, but it is extremely difficult to
 know the original string if you have its hash. This property is useful to communicate
@@ -118,13 +118,13 @@ class SHA1Hash:
                     c,
                     d,
                 )
-        self.h = (
-            self.h[0] + a & 0xFFFFFFFF,
-            self.h[1] + b & 0xFFFFFFFF,
-            self.h[2] + c & 0xFFFFFFFF,
-            self.h[3] + d & 0xFFFFFFFF,
-            self.h[4] + e & 0xFFFFFFFF,
-        )
+            self.h = (
+                self.h[0] + a & 0xFFFFFFFF,
+                self.h[1] + b & 0xFFFFFFFF,
+                self.h[2] + c & 0xFFFFFFFF,
+                self.h[3] + d & 0xFFFFFFFF,
+                self.h[4] + e & 0xFFFFFFFF,
+            )
         return "%08x%08x%08x%08x%08x" % tuple(self.h)
 
 
